@@ -362,6 +362,28 @@ const stem = (n) => n.toLowerCase().replace(/[’ʼ'`]/g, "").replace(/яєц|я
   const t = w.replace(/(ами|ями|ів|їв|ою|ею|ам|ям|ах|ях|ій|ий|ої|а|я|у|ю|і|ї|и|е|є|ь|о)$/, "");
   return t.length >= 3 ? t : w;
 }).join(" ");
+const PC = [[/яйц|яєц/, 55], [/картопл/, 150], [/морк/, 100], [/цибул/, 100], [/буряк/, 200], [/перец|перц/, 150], [/кабачк/, 300], [/часник/, 5], [/капуст/, 1e3], [/лимон/, 100], [/яблук/, 150], [/сосиск/, 50], [/лаваш/, 100], [/консерв/, 240], [/салат/, 150], [/зелень|кріп|петруш/, 50], [/лавров/, 1], [/помідор|томат/, 120], [/банан/, 120], [/огірк|огірок/, 120], [/авокадо/, 200]];
+const SP = [[/олі/, 17, 5], [/сіл/, 18, 6], [/цукор/, 25, 8], [/борошн/, 25, 8], [/томатн|паст/, 30, 10], [/мед/, 30, 10], [/майонез/, 25, 8], [/оцет/, 15, 5], [/пшоно/, 20, 7], [/розпушувач|сод/, 12, 6], [/сметан/, 25, 8], [/масло/, 20, 7]];
+const DEN = [[/олі/, 0.92], [/мед/, 1.4]];
+function grams(name, q, u) {
+  const t = name.toLowerCase();
+  if (u === "\u0433") return q;
+  if (u === "\u043A\u0433") return q * 1e3;
+  if (u === "\u043C\u043B" || u === "\u043B") {
+    const d = DEN.find((x) => x[0].test(t));
+    return q * (u === "\u043B" ? 1e3 : 1) * (d ? d[1] : 1);
+  }
+  if (u === "\u0441\u0442.\u043B." || u === "\u0447.\u043B.") {
+    const e = SP.find((x) => x[0].test(t));
+    return q * (e ? u === "\u0441\u0442.\u043B." ? e[1] : e[2] : u === "\u0441\u0442.\u043B." ? 15 : 5);
+  }
+  if (u === "\u0448\u0442") {
+    const e = PC.find((x) => x[0].test(t));
+    return e ? q * e[1] : null;
+  }
+  return null;
+}
+const fmtG = (g) => (g >= 50 ? Math.round(g / 5) * 5 : Math.round(g)) + " \u0433";
 function shopItems() {
   const sel = selDays(), map = {};
   Object.entries(S.plan).forEach(([k, id]) => {
@@ -369,23 +391,18 @@ function shopItems() {
     const r = R(id);
     if (!r) return;
     r.ings.forEach((g) => {
-      let q = Number(g.q) || 0, u = (g.u || "").trim();
-      if (u === "\u043A\u0433") {
-        q *= 1e3;
-        u = "\u0433";
-      } else if (u === "\u043B") {
-        q *= 1e3;
-        u = "\u043C\u043B";
-      }
-      const key = stem(g.n) || g.n.toLowerCase(), e = map[key] || (map[key] = { key, n: g.n.trim(), u: {} });
-      e.u[u] = (e.u[u] || 0) + q;
+      const q = Number(g.q) || 0, u = (g.u || "").trim();
+      if (/^вода\b/i.test(g.n.trim())) return;
+      const key = stem(g.n) || g.n.toLowerCase(), e = map[key] || (map[key] = { key, n: g.n.trim(), g: 0, o: {} }), gv = q ? grams(g.n, q, u) : 0;
+      if (gv === null) e.o[u] = (e.o[u] || 0) + q;
+      else e.g += gv;
     });
   });
   const out = [], base = (u) => u === "\u0433" || u === "\u043C\u043B" ? 0 : 1;
   Object.values(map).forEach((e) => {
     const o = S.ov[e.key] || {};
     if (o.hide) return;
-    const parts = Object.entries(e.u).sort((a, b) => base(a[0]) - base(b[0])).map(([u, q]) => fmt({ q, u })).filter(Boolean), nm = o.n || e.n;
+    const parts = [e.g ? fmtG(e.g) : "", ...Object.entries(e.o).map(([u, q]) => `${Math.round(q * 100) / 100} ${u}`.trim())].filter(Boolean), nm = o.n || e.n;
     out.push({ key: e.key, n: nm, qt: o.qt != null ? o.qt : parts.join(" + "), c: catOf(nm), ed: o.n != null || o.qt != null });
   });
   S.extra.forEach((x) => out.push({ key: "m" + x.id, n: x.n, qt: x.qt || "", c: catOf(x.n), man: true }));
