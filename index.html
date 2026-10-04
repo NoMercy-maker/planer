@@ -14,14 +14,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f5f3ef;--fg:#1f2421;--card:#fffdf9;--pr:#3d6b54;--prf:#f8f6f1;--sec:#e9eee9;--secf:#2f5642;--mut:#eeebe5;--mf:#85827b;--des:#a8513f;--bd:#e7e2d9;--sh:0 1px 1px rgb(31 36 33/.03),0 2px 6px rgb(31 36 33/.03),0 12px 28px -10px rgb(31 36 33/.08);--lift:0 1px 2px rgb(31 36 33/.04),0 8px 20px -6px rgb(31 36 33/.1),0 24px 48px -16px rgb(31 36 33/.14);--serif:'Cormorant Garamond',Georgia,'Times New Roman',serif}
+:root{--bg:#f5f3ef;--fg:#1f2421;--card:#fffdf9;--pr:#3d6b54;--prf:#f8f6f1;--sec:#e9eee9;--secf:#2f5642;--mut:#eeebe5;--mf:#85827b;--des:#a8513f;--bd:#e7e2d9;--sh:0 1px 1px rgb(31 36 33/.03),0 2px 6px rgb(31 36 33/.03),0 12px 28px -10px rgb(31 36 33/.08);--lift:0 1px 2px rgb(31 36 33/.04),0 8px 20px -6px rgb(31 36 33/.1),0 24px 48px -16px rgb(31 36 33/.14);--np:max(8px,calc(env(safe-area-inset-bottom) - 8px));--serif:'Cormorant Garamond',Georgia,'Times New Roman',serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
 h1,h2,h3,p,ul{margin:0;padding:0}li{list-style:none}
 #app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
-#main{padding:env(safe-area-inset-top) 0 150px}
+#main{padding:env(safe-area-inset-top) 0 calc(104px + var(--np))}
 #main.fade{animation:fi .3s}
 @keyframes fi{from{opacity:0}}
 .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:16px 24px 24px}
@@ -94,11 +94,11 @@ h1{font:500 38px/1.02 var(--serif);letter-spacing:-.01em;margin-top:6px}
 .cname{flex:1;font-size:14px}.ci.on .cname{color:var(--mf);text-decoration:line-through;text-decoration-color:rgb(31 36 33/.3)}
 .cq{font-size:12px;color:var(--mf);font-variant-numeric:tabular-nums}
 .foot{display:flex;justify-content:center;gap:8px}
-#fab{display:none;position:fixed;z-index:30;right:max(24px,calc((100vw - 480px)/2 + 24px));bottom:calc(100px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--pr);color:var(--prf);box-shadow:var(--lift);align-items:center;justify-content:center}
+#fab{display:none;position:fixed;z-index:30;right:max(24px,calc((100vw - 480px)/2 + 24px));bottom:calc(72px + var(--np));width:56px;height:56px;border-radius:50%;background:var(--pr);color:var(--prf);box-shadow:var(--lift);align-items:center;justify-content:center}
 #fab:active{transform:scale(.95)}
-#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:rgb(245 243 239/.88);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgb(231 226 217/.6)}
-#nav button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;color:var(--mf);transition:color .2s}
-#nav button.on{color:var(--pr)}#nav span{font-size:10.5px;font-weight:500;letter-spacing:.02em}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 16px var(--np);background:rgb(245 243 239/.9);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgb(231 226 217/.6)}
+#nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0;color:var(--mf);transition:color .2s}
+#nav button.on{color:var(--pr)}#nav span{font-size:10px;font-weight:500;letter-spacing:.02em}
 .ov2{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
 .sc{position:absolute;top:0;left:0;right:0;bottom:0;background:rgb(31 36 33/.25);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);animation:fi .3s;width:100%}
 .sp{position:relative;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;background:var(--card);border-radius:30px 30px 0 0;box-shadow:var(--lift);animation:su .3s ease-out}
@@ -134,7 +134,7 @@ textarea.in{height:auto;padding:12px 16px;resize:none;line-height:1.5}
 .il li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;font-size:14px}.il li+li{border-top:1px solid rgb(231 226 217/.6)}.il li span+span{color:var(--mf);font-size:13px;white-space:nowrap}
 .stp{margin-top:16px;font-size:14px;line-height:1.6;color:var(--fg);white-space:pre-line}
 .h3{margin:20px 0 4px;font:500 20px var(--serif)}
-#toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(68px + var(--np));transform:translateX(-50%) translateY(10px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw;text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -713,7 +713,7 @@ function bindRows() {
   });
 }
 const TABS = [["home", "\u0413\u043E\u043B\u043E\u0432\u043D\u0430", "house"], ["rec", "\u0420\u0435\u0446\u0435\u043F\u0442\u0438", "book"], ["week", "\u041C\u0435\u043D\u044E", "cal"], ["shop", "\u041F\u043E\u043A\u0443\u043F\u043A\u0438", "bag"]];
-$("#nav").innerHTML = TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}">${ic(i, 22)}<span>${l}</span></button>`).join("");
+$("#nav").innerHTML = TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}">${ic(i, 20)}<span>${l}</span></button>`).join("");
 $("#fab").innerHTML = ic("plus", 24, 1.75);
 function render() {
   $("#main").innerHTML = { home: vHome, rec: vRec, week: vWeek, shop: vShop }[tab]();
