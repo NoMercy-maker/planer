@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Планер">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2f6b4f">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232f6b4f'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E🍲%3C/text%3E%3C/svg%3E">
+<title>Кулінарний планер</title>
+<style>
+:root{--bg:#f4f6f1;--card:#fff;--ink:#1d2b24;--mut:#66756c;--line:#dce3da;--acc:#2f6b4f;--acc2:#e3a008;--danger:#b3372b}
+@media(prefers-color-scheme:dark){:root{--bg:#141b17;--card:#1d2722;--ink:#e8efe9;--mut:#9aaba1;--line:#2c3a33;--acc:#5fb98c;--acc2:#f0b429;--danger:#e8776a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:18px 20px 0;max-width:1200px;margin:auto}
+h1{font:700 26px Georgia,serif;margin:0 0 12px}
+nav{display:flex;gap:4px;border-bottom:2px solid var(--line)}
+nav button{background:none;border:0;padding:10px 16px;font:inherit;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button.on{color:var(--acc);border-color:var(--acc);font-weight:600}
+main{max-width:1200px;margin:auto;padding:16px 20px 40px}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.del{background:transparent;color:var(--danger);border:1px solid var(--line)}
+.btn.sm{padding:4px 10px;font-size:13px}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:100%}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.bar h2{margin:0;font:600 20px Georgia,serif;flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.rc{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.rc .ph{height:150px;background:var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:13px;text-align:center}
+.rc .ph img{width:100%;height:100%;object-fit:cover}
+.rc .bd{padding:12px;flex:1}
+.rc h3{margin:0 0 4px;font:600 17px Georgia,serif}
+.tag{display:inline-block;font-size:12px;color:var(--acc);border:1px solid var(--acc);border-radius:20px;padding:0 8px}
+.rc .ft{padding:0 12px 12px;display:flex;gap:6px}
+.rc ul{margin:6px 0 0;padding-left:18px;color:var(--mut);font-size:13px}
+.plan{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
+.pool{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;position:sticky;top:8px;max-height:80vh;overflow:auto}
+.pool h4{margin:0 0 8px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:6px;cursor:grab;font-size:14px}
+.chip small{display:block;color:var(--mut)}
+.tw{overflow-x:auto}
+table.pl{border-collapse:separate;border-spacing:6px;min-width:760px;width:100%}
+.pl th{font-weight:600;font-size:13px;color:var(--mut);text-align:left}
+.pl th.r{width:90px;vertical-align:middle}
+.cell{background:var(--card);border:1px dashed var(--line);border-radius:10px;height:78px;padding:6px;font-size:13px;position:relative}
+.cell.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--card))}
+.cell.full{border-style:solid}
+.cell b{display:block;line-height:1.25;padding-right:16px}
+.cell .x{position:absolute;top:2px;right:4px;background:none;border:0;color:var(--mut);cursor:pointer}
+.cell select{border:0;background:transparent;color:var(--mut);padding:2px;font-size:12px;position:absolute;bottom:2px;left:4px;width:calc(100% - 8px)}
+.shop h3{margin:18px 0 6px;font:600 17px Georgia,serif;border-bottom:1px solid var(--line);padding-bottom:4px}
+.shop label{display:flex;gap:10px;padding:5px 0;cursor:pointer;align-items:center}
+.shop input{width:auto}
+.shop .q{margin-left:auto;color:var(--mut)}
+.shop .done span{text-decoration:line-through;color:var(--mut)}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);width:min(640px,94vw);padding:18px;max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h3{margin:0 0 10px;font:600 20px Georgia,serif}
+.f{margin-bottom:10px}.f label{display:block;font-size:13px;color:var(--mut);margin-bottom:2px}
+.row{display:grid;grid-template-columns:1fr 80px 90px 32px;gap:6px;margin-bottom:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.imgbox{border:1px solid var(--line);border-radius:10px;padding:10px}
+.imgbox img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-top:8px}
+.imgbox .pr{font-size:12px;color:var(--mut);margin-top:6px;word-break:break-word}
+.empty{color:var(--mut);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:12px}
+.hint{color:var(--mut);font-size:13px;margin:0 0 12px}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);-webkit-text-size-adjust:100%}
+nav{overflow-x:auto;white-space:nowrap}
+@media(max-width:760px){input,select,textarea{font-size:16px}.btn{padding:10px 14px}.row{grid-template-columns:1fr 70px 80px 36px}main{padding:12px}.rc .ph{height:190px}.cell select{font-size:14px}.plan{grid-template-columns:1fr}.pool{position:static;max-height:200px}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Кулінарний планер</h1>
+  <nav id="nav">
+    <button data-t="recipes" class="on">Книга рецептів</button>
+    <button data-t="plan">Меню на тиждень</button>
+    <button data-t="shop">Список покупок</button>
+    <button id="cfg" style="margin-left:auto">⚙ Копія даних</button>
+  </nav>
+</header>
+<main id="main"></main>
+<div id="toast" style="display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;z-index:9;max-width:90vw"></div>
+
+<dialog id="dlg">
+  <h3 id="dt">Новий рецепт</h3>
+  <div class="two">
+    <div class="f"><label>Назва</label><input id="fn"></div>
+    <div class="f"><label>Категорія</label><select id="fc"></select></div>
+  </div>
+  <div class="f"><label>Інгредієнти</label><div id="ings"></div><button class="btn sec sm" id="addI" type="button">+ Інгредієнт</button></div>
+  <div class="f"><label>Кроки приготування</label><textarea id="fs" rows="4"></textarea></div>
+  <div class="imgbox">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b style="flex:1">Фото страви</b>
+      <select id="genSel" style="width:auto" title="Генератор зображень"><option value="horde">AI Horde — безкоштовно, 1–5 хв</option><option value="poll">Pollinations — швидко, але може вимагати оплату</option></select>
+      <button class="btn sm" id="gen" type="button">Згенерувати фото</button>
+      <button class="btn sec sm" id="upl" type="button">Завантажити своє</button><input type="file" id="file" accept="image/*" hidden>
+      <button class="btn del sm" id="rmImg" type="button">Прибрати</button>
+    </div>
+    <textarea id="prompt" rows="2" style="margin-top:8px" placeholder="Що на фото? Напишіть англійською, напр.: creamy mushroom buckwheat in a bowl. Якщо порожньо — опис складеться з назви й інгредієнтів."></textarea>
+    <div id="imgslot"></div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+    <button class="btn sec" id="cancel" type="button">Скасувати</button>
+    <button class="btn" id="save" type="button">Зберегти рецепт</button>
+  </div>
+</dialog>
+
+<dialog id="cfgDlg">
+  <h3>Резервна копія</h3>
+  <p class="hint">Рецепти й меню зберігаються в цьому браузері. Щоб не втратити їх чи перенести на інший пристрій, збережіть копію у файл.</p>
+  <div class="f">
+    <button class="btn sec sm" id="exp" type="button">Зберегти у файл</button>
+    <button class="btn sec sm" id="imp" type="button">Завантажити з файлу</button><input type="file" id="impf" accept=".json" hidden></div>
+  <div style="display:flex;justify-content:flex-end"><button class="btn" id="cfgX" type="button">Закрити</button></div>
+</dialog>
+
+<script>
+const MEALS=[['breakfast','Сніданок'],['lunch','Обід'],['dinner','Вечеря'],['snack','Перекус']];
+const DAYS=['Понеділок','Вівторок','Середа','Четвер','П’ятниця','Субота','Неділя'];
+const UNITS=['г','кг','мл','л','шт','ст.л.','ч.л.'];
+const CATS=[['Овочі та фрукти','картопл|морков|цибул|часник|помідор|томат|огір|капуст|перец|перц|яблук|банан|лимон|зелень|петруш|кріп|салат|броколі|гриб|буряк|кабач|авокадо|ягод|апельсин'],
+['Молочні продукти','молок|сир|сметан|масло верш|вершк|кефір|йогурт|яйц|яєць|яйце|масло'],
+['М’ясо та риба','м’яс|мяс|курк|куряч|філе|свин|яловичин|фарш|ковбас|сосиск|бекон|риб|лосос|тунец|креветк|шинк'],
+['Бакалія','борошно|рис|гречк|макарон|спагеті|вівсян|пластівц|цукор|олія|мед|хліб|тісто|крупа|квасол|нут|сочевиц|консерв|соус|томатна паста|горіх|ґрунт'],
+['Спеції','сіль|перець чорн|спец|паприк|куркум|орегано|базилік|кориця|лавров|ванілін|розпушувач|сода']];
+const CAT_LABEL=Object.fromEntries(MEALS);
+const catOf=n=>{n=n.toLowerCase();for(const[c,re]of CATS)if(new RegExp(re).test(n))return c;return'Інше'};
+const ORDER=[...CATS.map(c=>c[0]),'Інше'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+
+const SEED=()=>withImgs({recipes:[
+ {id:uid(),name:'Вівсянка з бананом',cat:'breakfast',ings:[{n:'вівсяні пластівці',q:60,u:'г'},{n:'молоко',q:200,u:'мл'},{n:'банан',q:1,u:'шт'},{n:'мед',q:1,u:'ч.л.'}],steps:'Закип’ятити молоко, додати пластівці, варити 5 хв. Подавати з бананом і медом.',img:''},
+ {id:uid(),name:'Омлет із помідором',cat:'breakfast',ings:[{n:'яйця',q:3,u:'шт'},{n:'помідор',q:1,u:'шт'},{n:'молоко',q:50,u:'мл'},{n:'сіль',q:1,u:'ч.л.'}],steps:'Збити яйця з молоком і сіллю. Обсмажити помідор, залити яйцями, готувати під кришкою 5 хв.',img:''},
+ {id:uid(),name:'Курячий суп із локшиною',cat:'lunch',ings:[{n:'куряче філе',q:300,u:'г'},{n:'морква',q:1,u:'шт'},{n:'цибуля',q:1,u:'шт'},{n:'картопля',q:300,u:'г'},{n:'локшина',q:80,u:'г'},{n:'сіль',q:1,u:'ч.л.'}],steps:'Відварити філе, додати овочі, за 10 хв — локшину. Посолити.',img:''},
+ {id:uid(),name:'Гречка з грибами',cat:'dinner',ings:[{n:'гречка',q:200,u:'г'},{n:'гриби',q:250,u:'г'},{n:'цибуля',q:1,u:'шт'},{n:'олія',q:2,u:'ст.л.'}],steps:'Відварити гречку. Обсмажити цибулю з грибами, змішати.',img:''},
+ {id:uid(),name:'Яблуко з горіхами',cat:'snack',ings:[{n:'яблуко',q:2,u:'шт'},{n:'горіхи',q:30,u:'г'}],steps:'Нарізати яблука, посипати подрібненими горіхами.',img:''}
+],plan:{},checked:{}});
+
+let S;
+try{S=JSON.parse(localStorage.getItem('culinary-v1'))}catch(e){}
+if(!S||!S.recipes)S=SEED();
+const persist=()=>{try{localStorage.setItem('culinary-v1',JSON.stringify(S))}catch(e){}};
+let tab='recipes',editId=null,curImg='';
+
+/* ---------- Зображення (безкоштовний Pollinations.ai, відкрита модель FLUX) ---------- */
+const TR={'борщ':'borscht','суп':'soup','локшин':'noodles','курк':'chicken','курин':'chicken','куряч':'chicken','гречк':'buckwheat','гриб':'mushrooms','омлет':'omelette','вівсян':'oatmeal','пластівц':'flakes','банан':'banana','яблук':'apple','помідор':'tomato','томат':'tomato','картопл':'potato','пюре':'mashed potatoes','морков':'carrot','цибул':'onion','яйц':'eggs','яєць':'eggs','молок':'milk','сирник':'cottage cheese pancakes','сир':'cheese','творог':'cottage cheese','мед':'honey','горіх':'nuts','лосос':'salmon','риб':'fish','свин':'pork','яловичин':'beef','м’яс':'meat','фарш':'minced meat','рис':'rice','макарон':'pasta','паста':'pasta','салат':'salad','млинц':'crepes','вареник':'dumplings','пельмен':'dumplings','голубц':'cabbage rolls','котлет':'cutlets','каш':'porridge','запіканк':'casserole','пиріг':'pie','торт':'cake','печив':'cookies','смузі':'smoothie','тост':'toast','бутерброд':'sandwich','піц':'pizza','шоколад':'chocolate','лимон':'lemon','часник':'garlic','огірк':'cucumber','капуст':'cabbage','перец':'pepper','перц':'pepper','кабачк':'zucchini','буряк':'beetroot','сметан':'sour cream','масло':'butter','олі':'oil','філе':'fillet'};
+const tr=t=>{t=String(t||'').toLowerCase();for(const k in TR)t=t.split(k).join(' '+TR[k]+' ');return t.replace(/\s+/g,' ').trim()};
+const STYLE=d=>`Professional food photography of ${d}, beautifully plated on a ceramic plate, rustic wooden table, soft natural window light, 45-degree angle, shallow depth of field, vibrant natural colors, appetizing, high detail, no text`;
+function buildPrompt(name,ings){
+  const list=ings.filter(i=>i.n).slice(0,5).map(i=>tr(i.n)).join(', ');
+  return STYLE((tr(name)||'a homemade dish')+(list?', made with '+list:''));
+}
+function imgUrl(p,seed){return `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=640&height=480&nologo=true&seed=${seed??Math.floor(Math.random()*99999)}`}
+function withImgs(d){return d}
+
+/* ---------- Рендер ---------- */
+function render(){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  $('#main').innerHTML=tab==='recipes'?vRecipes():tab==='plan'?vPlan():vShop();
+  if(tab==='plan')bindPlan();
+  if(tab==='shop')bindShop();
+}
+$('#nav').onclick=e=>{if(e.target.dataset.t){tab=e.target.dataset.t;render()}};
+
+function vRecipes(){
+  const cards=S.recipes.map(r=>`<div class="rc">
+    <div class="ph">${r.img?`<img src="${esc(r.img)}" alt="${esc(r.name)}" loading="lazy" onerror="this.parentNode.textContent='Фото не завантажилось — спробуйте згенерувати знову'">`:'Немає фото'}</div>
+    <div class="bd"><h3>${esc(r.name)}</h3><span class="tag">${CAT_LABEL[r.cat]}</span>
+    <ul>${r.ings.map(i=>`<li>${esc(i.n)} — ${i.q} ${i.u}</li>`).join('')}</ul></div>
+    <div class="ft"><button class="btn sec sm" onclick="openDlg('${r.id}')">Редагувати</button><button class="btn del sm" onclick="delRecipe('${r.id}')">Видалити</button></div></div>`).join('');
+  return `<div class="bar"><h2>Мої рецепти (${S.recipes.length})</h2><button class="btn sec" onclick="fillImgs()">Фото для всіх без фото</button><button class="btn" onclick="openDlg()">+ Новий рецепт</button></div>
+  ${cards?`<div class="grid">${cards}</div>`:'<div class="empty">Книга порожня. Додайте перший рецепт — він з’явиться тут.</div>'}`;
+}
+
+function vPlan(){
+  const pool=S.recipes.map(r=>`<div class="chip" draggable="true" data-id="${r.id}">${esc(r.name)}<small>${CAT_LABEL[r.cat]}</small></div>`).join('')||'<small>Спершу додайте рецепти</small>';
+  const rows=MEALS.map(([m,l])=>`<tr><th class="r">${l}</th>${DAYS.map((d,i)=>{
+    const k=i+'-'+m,r=S.recipes.find(x=>x.id===S.plan[k]);
+    return `<td><div class="cell ${r?'full':''}" data-k="${k}">${r?`<b>${esc(r.name)}</b><button class="x" data-x="${k}" title="Прибрати">✕</button>`:''}
+    <select data-k="${k}"><option value="">${r?'Змінити…':'+ додати'}</option>${S.recipes.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div></td>`}).join('')}</tr>`).join('');
+  return `<div class="bar"><h2>Меню на тиждень</h2>
+    <button class="btn" id="auto">Автозаповнення</button><button class="btn sec" id="clr">Очистити</button></div>
+  <p class="hint">Перетягніть страву зі списку в клітинку або виберіть її зі списку в клітинці. Автозаповнення підбирає страви за категорією й не чіпає заповнені клітинки.</p>
+  <div class="plan"><div class="pool"><h4>Мої страви</h4>${pool}</div>
+  <div class="tw"><table class="pl"><tr><th></th>${DAYS.map(d=>`<th>${d}</th>`).join('')}</tr>${rows}</table></div></div>`;
+}
+
+function bindPlan(){
+  document.querySelectorAll('.chip').forEach(c=>c.ondragstart=e=>e.dataTransfer.setData('text/plain',c.dataset.id));
+  document.querySelectorAll('.cell').forEach(c=>{
+    c.ondragover=e=>{e.preventDefault();c.classList.add('over')};
+    c.ondragleave=()=>c.classList.remove('over');
+    c.ondrop=e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');if(id){S.plan[c.dataset.k]=id;persist();render()}};
+  });
+  document.querySelectorAll('.cell select').forEach(s=>s.onchange=()=>{if(s.value){S.plan[s.dataset.k]=s.value;persist();render()}});
+  document.querySelectorAll('.cell .x').forEach(b=>b.onclick=()=>{delete S.plan[b.dataset.x];persist();render()});
+  $('#clr').onclick=()=>{if(confirm('Очистити все меню?')){S.plan={};persist();render()}};
+  $('#auto').onclick=()=>{
+    if(!S.recipes.length)return alert('Спершу додайте рецепти.');
+    MEALS.forEach(([m])=>{
+      const pool=S.recipes.filter(r=>r.cat===m),src=pool.length?pool:S.recipes;
+      let bag=[];
+      DAYS.forEach((_,i)=>{const k=i+'-'+m;if(S.plan[k])return;
+        if(!bag.length)bag=[...src].sort(()=>Math.random()-.5);
+        S.plan[k]=bag.pop().id});
+    });
+    persist();render();
+  };
+}
+
+/* ---------- Список покупок ---------- */
+function buildShopping(){
+  const map={};
+  Object.values(S.plan).forEach(id=>{
+    const r=S.recipes.find(x=>x.id===id);if(!r)return;
+    r.ings.forEach(i=>{
+      let q=Number(i.q)||0,u=i.u;
+      if(u==='кг'){q*=1000;u='г'}else if(u==='л'){q*=1000;u='мл'}
+      const key=i.n.trim().toLowerCase()+'|'+u;
+      (map[key]??={key,n:i.n.trim(),q:0,u,c:catOf(i.n)}).q+=q;
+    });
+  });
+  return Object.values(map);
+}
+const fmt=i=>{let{q,u}=i;if(u==='г'&&q>=1000){q/=1000;u='кг'}else if(u==='мл'&&q>=1000){q/=1000;u='л'}return `${Math.round(q*100)/100} ${u}`};
+
+function vShop(){
+  const items=buildShopping();
+  if(!items.length)return `<div class="bar"><h2>Список покупок</h2></div><div class="empty">Додайте страви в меню на тиждень — тут з’явиться список інгредієнтів.</div>`;
+  const left=items.filter(i=>!S.checked[i.key]).length;
+  const groups=ORDER.map(c=>{
+    const g=items.filter(i=>i.c===c).sort((a,b)=>a.n.localeCompare(b.n,'uk'));
+    return g.length?`<h3>${c}</h3>`+g.map(i=>`<label class="${S.checked[i.key]?'done':''}"><input type="checkbox" data-k="${esc(i.key)}" ${S.checked[i.key]?'checked':''}><span>${esc(i.n)}</span><span class="q">${fmt(i)}</span></label>`).join(''):'';
+  }).join('');
+  return `<div class="bar"><h2>Список покупок</h2><span class="hint" style="margin:0">Залишилось: ${left} з ${items.length}</span>
+    <button class="btn sec sm" id="uncheck">Скинути відмітки</button><button class="btn sec sm" id="copy">Копіювати</button></div>
+  <div class="shop">${groups}</div>`;
+}
+function bindShop(){
+  document.querySelectorAll('.shop input').forEach(c=>c.onchange=()=>{S.checked[c.dataset.k]=c.checked;persist();render()});
+  const u=$('#uncheck');if(u)u.onclick=()=>{S.checked={};persist();render()};
+  const cp=$('#copy');if(cp)cp.onclick=()=>{
+    const t=ORDER.map(c=>{const g=buildShopping().filter(i=>i.c===c);return g.length?c+':\n'+g.map(i=>`- ${i.n} ${fmt(i)}`).join('\n'):''}).filter(Boolean).join('\n\n');
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>cp.textContent='Скопійовано').catch(()=>prompt('Скопіюйте список:',t));
+  };
+}
+
+/* ---------- Форма рецепта ---------- */
+$('#fc').innerHTML=MEALS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
+function ingRow(i={n:'',q:'',u:'г'}){
+  const d=document.createElement('div');d.className='row';
+  d.innerHTML=`<input placeholder="Інгредієнт" value="${esc(i.n)}"><input type="number" min="0" step="any" placeholder="К-сть" value="${i.q}"><select>${UNITS.map(u=>`<option ${u===i.u?'selected':''}>${u}</option>`).join('')}</select><button class="btn del sm" type="button">✕</button>`;
+  d.querySelector('button').onclick=()=>d.remove();
+  $('#ings').appendChild(d);
+}
+const readIngs=()=>[...document.querySelectorAll('#ings .row')].map(r=>{const[a,b,c]=r.querySelectorAll('input,select');return{n:a.value.trim(),q:parseFloat(b.value)||0,u:c.value}}).filter(i=>i.n);
+function showImg(){
+  $('#imgslot').innerHTML=curImg?`<img src="${esc(curImg)}" alt="Фото страви" onerror="this.outerHTML='<div class=pr>Не вдалося завантажити фото. Перевірте інтернет і спробуйте ще раз.</div>'">`:'';
+  $('#rmImg').style.display=curImg?'':'none';
+}
+function openDlg(id){
+  editId=id||null;const r=S.recipes.find(x=>x.id===id);
+  $('#dt').textContent=r?'Редагування рецепта':'Новий рецепт';
+  $('#fn').value=r?.name||'';$('#fc').value=r?.cat||'breakfast';$('#fs').value=r?.steps||'';
+  $('#ings').innerHTML='';(r?.ings.length?r.ings:[undefined,undefined,undefined]).forEach(i=>ingRow(i));
+  curImg=r?.img||'';$('#prompt').value='';showImg();
+  $('#dlg').showModal();
+}
+$('#addI').onclick=()=>ingRow();
+$('#cancel').onclick=()=>$('#dlg').close();
+$('#gen').onclick=async e=>{
+  const b=e.target,d=$('#prompt').value.trim();
+  const p=d?STYLE(d):buildPrompt($('#fn').value.trim(),readIngs());
+  b.disabled=true;b.textContent='Генерую…';
+  try{curImg=await getPhoto(p,m=>b.textContent=m||'Сервіс зайнятий, чекаю…');showImg()}catch(er){alert(er.message)}
+  b.disabled=false;b.textContent='Згенерувати фото';
+};
+$('#upl').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const im=new Image(),u=URL.createObjectURL(f);
+  im.onload=()=>{const w=Math.min(640,im.width),c=document.createElement('canvas');c.width=w;c.height=Math.round(im.height*w/im.width);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);curImg=c.toDataURL('image/jpeg',.8);URL.revokeObjectURL(u);$('#prompt').value='';showImg();e.target.value=''};
+  im.src=u;
+};
+$('#rmImg').onclick=()=>{curImg='';showImg()};
+$('#save').onclick=()=>{
+  const name=$('#fn').value.trim();
+  if(!name){$('#fn').focus();return}
+  const ings=readIngs();
+  if(!ings.length){alert('Додайте хоча б один інгредієнт.');return}
+  const rec={id:editId||uid(),name,cat:$('#fc').value,ings,steps:$('#fs').value.trim(),img:curImg};
+  if(editId)S.recipes=S.recipes.map(r=>r.id===editId?rec:r);else S.recipes.push(rec);
+  persist();$('#dlg').close();render();
+};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function shrink(src,ok,bad){const im=new Image();im.onload=()=>{const w=Math.min(640,im.width),c=document.createElement('canvas');c.width=w;c.height=Math.round(im.height*w/im.width);c.getContext('2d').drawImage(im,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.8))};im.onerror=()=>bad(new Error('Сервіс повернув не зображення. Спробуйте ще раз.'));im.src=src}
+/* Фото завантажується один раз і зберігається в рецепті, тому повторні запити до сервісу не потрібні */
+let GEN='horde';try{GEN=localStorage.getItem('culinary-gen')||'horde'}catch(e){}
+$('#genSel').value=GEN;
+$('#genSel').onchange=e=>{GEN=e.target.value;try{localStorage.setItem('culinary-gen',GEN)}catch(x){}};
+/* AI Horde: безкоштовна спільнотна мережа Stable Diffusion, ключ не потрібен (анонімний 0000000000). Черга може тривати 1–5 хв. */
+async function hordePhoto(p,onWait){
+  const H={'Content-Type':'application/json',apikey:'0000000000','Client-Agent':'culinary-planner:1:local'};
+  const base='https://aihorde.net/api/v2/generate/';
+  const r=await fetch(base+'async',{method:'POST',headers:H,body:JSON.stringify({prompt:p+' ### blurry, text, watermark, people, hands, cartoon, deformed, bad plating',params:{width:512,height:384,steps:25,n:1,cfg_scale:7,sampler_name:'k_euler_a'},nsfw:false,censor_nsfw:true,r2:false,slow_workers:true})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.id)throw new Error('AI Horde: '+(j.message||('помилка '+r.status)));
+  let done=false;
+  for(let i=0;i<100&&!done;i++){
+    await wait(4000);
+    const c=await (await fetch(base+'check/'+j.id)).json();
+    if(c.faulted)throw new Error('AI Horde: генерація не вдалась. Спробуйте ще раз.');
+    done=!!c.done;
+    if(!done&&onWait)onWait(c.queue_position!=null?`в черзі: ${c.queue_position}, ~${c.wait_time||'?'} с`:'генерую');
+  }
+  if(!done)throw new Error('AI Horde: черга задовга. Спробуйте пізніше або оберіть Pollinations.');
+  const st=await (await fetch(base+'status/'+j.id)).json();
+  const g=st.generations&&st.generations[0];
+  if(!g||!g.img)throw new Error('AI Horde не повернув зображення (можливо, запит відхилено фільтром).');
+  let src;
+  if(/^https?:/.test(g.img)){const b=await (await fetch(g.img)).blob();src=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b)})}
+  else src='data:image/webp;base64,'+g.img;
+  return await new Promise((res,rej)=>shrink(src,res,rej));
+}
+async function getPhoto(p,onWait){
+  if(!navigator.onLine)throw new Error('Немає інтернету.');
+  if(GEN==='horde')return hordePhoto(p,onWait);
+  for(let t=0;t<4;t++){
+    let r;
+    try{r=await fetch(imgUrl(p))}catch(e){return imgUrl(p,1)}
+    if(r.ok){const b=await r.blob();return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>shrink(fr.result,res,rej);fr.onerror=rej;fr.readAsDataURL(b)})}
+    if(r.status===401||r.status===402||r.status===403){
+      GEN='horde';$('#genSel').value=GEN;try{localStorage.setItem('culinary-gen',GEN)}catch(e){}
+      if(onWait)onWait('Pollinations вимагає оплату (помилка '+r.status+'), перемикаю на AI Horde');
+      await wait(2500);
+      return hordePhoto(p,onWait);
+    }
+    if(r.status===429||r.status>=500){if(onWait)onWait();await wait(16000);continue}
+    throw new Error('Сервіс фото відповів помилкою '+r.status+'.');
+  }
+  throw new Error('Сервіс фото зараз перевантажений. Спробуйте за хвилину.');
+}
+let filling=false;
+async function fillImgs(){
+  if(filling)return;filling=true;
+  const todo=S.recipes.filter(r=>!r.img||r.img.startsWith('http')),t=$('#toast');
+  for(let i=0;i<todo.length;i++){
+    const r=todo[i],n=`Фото ${i+1} з ${todo.length}: ${r.name}`;
+    t.textContent=n+'…';t.style.display='block';
+    try{r.img=await getPhoto(buildPrompt(r.name,r.ings),m=>t.textContent=n+' — '+(m||'чекаю чергу сервісу')+'…');persist();if(tab==='recipes')render();if(i<todo.length-1&&GEN==='poll')await wait(15000)}
+    catch(e){r.img='';t.textContent=e.message;await wait(4000);break}
+  }
+  t.style.display='none';filling=false;
+}
+function delRecipe(id){
+  if(!confirm('Видалити рецепт? Його буде прибрано й з меню.'))return;
+  S.recipes=S.recipes.filter(r=>r.id!==id);
+  Object.keys(S.plan).forEach(k=>{if(S.plan[k]===id)delete S.plan[k]});
+  persist();render();
+}
+
+/* ---------- Налаштування і резервна копія ---------- */
+$('#cfg').onclick=()=>$('#cfgDlg').showModal();
+$('#cfgX').onclick=()=>$('#cfgDlg').close();
+$('#exp').onclick=()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
+  a.download='kulinarnyi-planer-kopiya.json';a.click();
+};
+$('#imp').onclick=()=>$('#impf').click();
+$('#impf').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  f.text().then(t=>{
+    const d=JSON.parse(t);
+    if(!Array.isArray(d.recipes))throw new Error();
+    if(!confirm('Замінити поточні рецепти й меню даними з файлу?'))return;
+    S={recipes:d.recipes,plan:d.plan||{},checked:d.checked||{}};persist();$('#cfgDlg').close();render();
+  }).catch(()=>alert('Не вдалося прочитати файл. Потрібна резервна копія, збережена цим планером.'));
+  e.target.value='';
+};
+if(!S.seeded){S.seeded=true;persist();render();fillImgs()}else render();
+</script>
+</body>
+</html>
