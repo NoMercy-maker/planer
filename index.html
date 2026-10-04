@@ -281,7 +281,7 @@ function vRec() {
 }
 const dayWeek = (i) => {
   const on = S.pins.includes(i), n = SL.filter(([m]) => meal(i, m)).length;
-  return `<li class="cd pad2${i === TODAY() ? " ring" : ""}"><div class="dh2"><div class="nm2"><h2>${DAYS[i]}</h2><span>${dl(i)}</span></div><div class="ac">${tags(i) || `<span class="cn">${n}/4</span>`}<button class="ib" data-a="share" data-k="${i}" aria-label="\u041F\u043E\u0434\u0456\u043B\u0438\u0442\u0438\u0441\u044C">${ic("share", 15)}</button><button class="ib${on ? " pon" : ""}" data-a="pin" data-d="${i}" aria-pressed="${on}" aria-label="${on ? "\u0412\u0456\u0434\u043A\u0440\u0456\u043F\u0438\u0442\u0438" : "\u0417\u0430\u043A\u0440\u0456\u043F\u0438\u0442\u0438"} ${DAYS[i]}">${ic("pin", 15, 1.5, on ? "currentColor" : "none")}</button></div></div><div class="g2">${SL.map(([m, l]) => {
+  return `<li class="cd pad2${i === TODAY() ? " ring" : ""}"><div class="dh2"><div class="nm2"><h2>${DAYS[i]}</h2><span>${dl(i)}</span></div><div class="ac">${tags(i) || `<span class="cn">${n}/4</span>`}<button class="ib${on ? " pon" : ""}" data-a="pin" data-d="${i}" aria-pressed="${on}" aria-label="${on ? "\u0412\u0456\u0434\u043A\u0440\u0456\u043F\u0438\u0442\u0438" : "\u0417\u0430\u043A\u0440\u0456\u043F\u0438\u0442\u0438"} ${DAYS[i]}">${ic("pin", 15, 1.5, on ? "currentColor" : "none")}</button></div></div><div class="g2">${SL.map(([m, l]) => {
     const r = meal(i, m);
     return `<button class="sb2 ${r ? "f" : "e"}" data-a="pick" data-d="${i}" data-m="${m}">${r ? thumb(r, 36, 10) : `<span class="pl2">${ic("plus", 16)}</span>`}<span class="st"><span class="sl2">${l}</span><span class="sn${r ? "" : " e"}">${r ? esc(r.name) : "\u041E\u0431\u0440\u0430\u0442\u0438"}</span></span></button>`;
   }).join("")}</div></li>`;
